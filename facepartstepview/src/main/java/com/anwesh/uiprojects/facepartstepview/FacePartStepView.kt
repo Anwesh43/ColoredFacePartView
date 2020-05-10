@@ -31,3 +31,48 @@ fun Int.inverse() : Float = 1f / this
 fun Float.maxScale(i : Int, n : Int) : Float = Math.max(0f, this - i * n.inverse())
 fun Float.divideScale(i : Int, n : Int) : Float = Math.min(n.inverse(), maxScale(i, n)) * n
 fun Float.sinify() : Float = Math.sin(this * Math.PI).toFloat()
+
+fun Canvas.drawFaceShape(scale : Float, size : Float, paint : Paint) {
+    val sf : Float = scale.sinify()
+    val sf0 : Float = sf.divideScale(0, parts)
+    paint.style = Paint.Style.STROKE
+    drawArc(RectF(-size, -size, size, size), 0f, 360f * sf0, false, paint)
+}
+
+fun Canvas.drawFaceEye(i : Int, scale : Float, size : Float, paint : Paint) {
+    val sf2 : Float = scale.sinify().divideScale(2, parts)
+    val sf2i : Float = sf2.divideScale(i, 2)
+    paint.style = Paint.Style.FILL
+    val x : Float = (1 - 2 * i) * (size / eyeOffsetFactor) * sf2
+    val y : Float = -(size / eyeOffsetFactor)
+    val r : Float = size / eyeSizeFactor
+    drawCircle(x, y, r * sf2i, paint)
+}
+
+fun Canvas.drawFaceLip(scale : Float, size : Float, paint : Paint) {
+    val sf1 : Float = scale.sinify().divideScale(1, parts)
+    val y : Float = size / lipOffsetFactor
+    val lipSize : Float = size / lipSizeFactor
+    drawLine(-(lipSize) * sf1, y, lipSize * sf1, y, paint)
+}
+
+fun Canvas.drawFacePartStep(scale : Float, size : Float, paint : Paint) {
+    drawFaceShape(scale, size, paint)
+    for (j in 0..1) {
+        drawFaceEye(j, scale, size, paint)
+    }
+    drawFaceLip(scale, size, paint)
+}
+
+fun Canvas.drawFPSNode(i : Int, scale : Float, paint : Paint) {
+    val w : Float = width.toFloat()
+    val h : Float = height.toFloat()
+    val size : Float = Math.min(w, h) / sizeFactor
+    paint.color = Color.parseColor(colors[i])
+    paint.strokeCap = Paint.Cap.ROUND
+    paint.strokeWidth = Math.min(w, h) / strokeFactor
+    save()
+    translate(w / 2, h / 2)
+    drawFacePartStep(scale, size, paint)
+    restore()
+}
