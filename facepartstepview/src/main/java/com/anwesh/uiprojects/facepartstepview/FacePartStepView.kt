@@ -18,12 +18,12 @@ val balls : Int = 2
 val sizeFactor : Float = 2.5f
 val strokeFactor : Float = 90f
 val delay : Long = 20
-val colors : Array<String> = arrayOf("#4CAF50", "#F44336", "#009688", "#FF9800", "#673AB7")
+val colors : Array<String> = arrayOf("#673AB7", "#F44336", "#009688", "#3F51B5", "#4CAF50")
 val backColor : Int = Color.parseColor("#BDBDBD")
-val eyeSizeFactor : Float = 9f
-val eyeOffsetFactor : Float = 8f
+val eyeSizeFactor : Float = 8f
+val eyeOffsetFactor : Float = 2.7f
 val lipSizeFactor = 6f
-val lipOffsetFactor = 4f
+val lipOffsetFactor = 2.7f
 val parts : Int = 3
 val scGap : Float = 0.02f / parts
 
@@ -34,13 +34,13 @@ fun Float.sinify() : Float = Math.sin(this * Math.PI).toFloat()
 
 fun Canvas.drawFaceShape(scale : Float, size : Float, paint : Paint) {
     val sf : Float = scale.sinify()
-    val sf0 : Float = sf.divideScale(0, parts)
+    val sf0 : Float = sf.divideScale(0, parts + 1)
     paint.style = Paint.Style.STROKE
     drawArc(RectF(-size, -size, size, size), 0f, 360f * sf0, false, paint)
 }
 
 fun Canvas.drawFaceEye(i : Int, scale : Float, size : Float, paint : Paint) {
-    val sf2 : Float = scale.sinify().divideScale(2, parts)
+    val sf2 : Float = scale.sinify().divideScale(2, parts + 1)
     val sf2i : Float = sf2.divideScale(i, 2)
     paint.style = Paint.Style.FILL
     val x : Float = (1 - 2 * i) * (size / eyeOffsetFactor) * sf2
@@ -50,7 +50,7 @@ fun Canvas.drawFaceEye(i : Int, scale : Float, size : Float, paint : Paint) {
 }
 
 fun Canvas.drawFaceLip(scale : Float, size : Float, paint : Paint) {
-    val sf1 : Float = scale.sinify().divideScale(1, parts)
+    val sf1 : Float = scale.sinify().divideScale(1, parts + 1)
     val y : Float = size / lipOffsetFactor
     val lipSize : Float = size / lipSizeFactor
     drawLine(-(lipSize) * sf1, y, lipSize * sf1, y, paint)
@@ -58,7 +58,7 @@ fun Canvas.drawFaceLip(scale : Float, size : Float, paint : Paint) {
 
 fun Canvas.drawFacePartStep(scale : Float, size : Float, paint : Paint) {
     drawFaceShape(scale, size, paint)
-    for (j in 0..1) {
+    for (j in 0..(balls - 1)) {
         drawFaceEye(j, scale, size, paint)
     }
     drawFaceLip(scale, size, paint)
