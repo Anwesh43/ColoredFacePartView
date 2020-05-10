@@ -228,4 +228,12 @@ class FacePartStepView(ctx : Context) : View(ctx) {
             }
         }
     }
+
+    companion object {
+        fun create(activity : Activity) : FacePartStepView {
+            val view : FacePartStepView = FacePartStepView(activity)
+            activity.setContentView(view)
+            return view
+        }
+    }
 }
